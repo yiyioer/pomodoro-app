@@ -16,8 +16,8 @@ const SESSIONS: { key: SessionType; label: string }[] = [
 const CIRCLE_R = 140
 const CIRCLE_C = 2 * Math.PI * CIRCLE_R
 
-const spring = { type: 'spring' as const, stiffness: 400, damping: 30 }
-const gentle = { type: 'spring' as const, stiffness: 200, damping: 25 }
+const spring = { type: 'spring' as const, stiffness: 250, damping: 25 }
+const gentle = { type: 'spring' as const, stiffness: 100, damping: 18 }
 const panelTransition = { type: 'spring' as const, stiffness: 170, damping: 20, mass: 0.8 }
 const STORAGE_KEY = 'pomodoro-durations'
 
@@ -348,7 +348,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Sessions count */}
-      <div className={`text-xs tracking-wide ${subColor} no-drag shrink-0 mt-2`}>
+      <div className={`text-xs tracking-wide ${subColor} no-drag shrink-0 mt-3`}>
         已完成 {state.sessionsCompleted} 个番茄
       </div>
 

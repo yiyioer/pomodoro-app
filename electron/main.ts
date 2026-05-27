@@ -34,7 +34,7 @@ function createWindow() {
     width: 420,
     height: 600,
     minWidth: 400,
-    minHeight: 560,
+    minHeight: 610,
     frame: false,
     transparent: true,
     resizable: true,
