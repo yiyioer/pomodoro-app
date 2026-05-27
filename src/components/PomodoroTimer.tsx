@@ -18,6 +18,7 @@ const CIRCLE_C = 2 * Math.PI * CIRCLE_R
 
 const spring = { type: 'spring' as const, stiffness: 400, damping: 30 }
 const gentle = { type: 'spring' as const, stiffness: 200, damping: 25 }
+const fade = { duration: 0.2, ease: 'easeOut' as const }
 const STORAGE_KEY = 'pomodoro-durations'
 
 function loadDurations(): Record<SessionType, number> {
@@ -125,9 +126,9 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
   const activeTab = darkMode ? 'bg-white/[0.12]' : 'bg-black/[0.06]'
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-between py-6 px-8 drag-region">
+    <div className="h-full w-full flex flex-col items-center py-4 px-8 drag-region">
       {/* Top bar: window controls + toggles */}
-      <div className="w-full flex items-center justify-between no-drag">
+      <div className="w-full flex items-center justify-between no-drag shrink-0">
         {/* Traffic light buttons */}
         <div className="flex gap-2.5">
           <button
@@ -180,7 +181,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Session selector */}
-      <div className="no-drag">
+      <div className="no-drag shrink-0 mt-4">
         <motion.div
           layout
           className={`flex gap-1 p-1 rounded-xl ${btnBg}`}
@@ -210,47 +211,49 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Settings panel */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showSettings && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -8 }}
+            initial={{ opacity: 0, scale: 0.95, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -8 }}
-            transition={spring}
-            className="no-drag mb-3 mt-3"
+            exit={{ opacity: 0, scale: 0.95, y: -6 }}
+            transition={fade}
+            className="no-drag shrink-0"
           >
-            <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
-              {([
-                { key: 'focus' as SessionType, label: '专注' },
-                { key: 'shortBreak' as SessionType, label: '短休' },
-                { key: 'longBreak' as SessionType, label: '长休' },
-              ]).map(({ key, label }) => (
-                <label key={key} className={`flex flex-col items-center gap-1 ${subColor}`}>
-                  <span className="text-[10px] tracking-wide">{label}</span>
-                  <input
-                    type="number"
-                    min={1}
-                    max={120}
-                    value={durations[key]}
-                    onChange={(e) => handleDurationChange(key, parseInt(e.target.value) || 1)}
-                    className={`w-12 text-center text-xs font-medium py-1 rounded-lg border-0 outline-none ${btnBg} ${textColor}`}
-                    style={{ MozAppearance: 'textfield' }}
-                  />
-                  <span className="text-[9px] opacity-50">分钟</span>
-                </label>
-              ))}
+            <div className={`mt-3 mb-1 pt-3 border-t ${darkMode ? 'border-white/10' : 'border-gray-300/60'}`}>
+              <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
+                {([
+                  { key: 'focus' as SessionType, label: '专注' },
+                  { key: 'shortBreak' as SessionType, label: '短休' },
+                  { key: 'longBreak' as SessionType, label: '长休' },
+                ]).map(({ key, label }) => (
+                  <label key={key} className={`flex flex-col items-center gap-1 ${subColor}`}>
+                    <span className="text-[10px] tracking-wide">{label}</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={120}
+                      value={durations[key]}
+                      onChange={(e) => handleDurationChange(key, parseInt(e.target.value) || 1)}
+                      className={`w-12 text-center text-xs font-medium py-1 rounded-lg border-0 outline-none ${btnBg} ${textColor}`}
+                      style={{ MozAppearance: 'textfield' }}
+                    />
+                    <span className="text-[9px] opacity-50">分钟</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Ring progress + timer */}
-      <div className="relative flex items-center justify-center no-drag">
-        <svg width="320" height="320" viewBox="0 0 320 320">
+      <div className="relative flex items-center justify-center no-drag shrink-0 mt-2">
+        <svg width="300" height="300" viewBox="0 0 300 300">
           {/* Track */}
           <circle
-            cx="160"
-            cy="160"
+            cx="150"
+            cy="150"
             r={CIRCLE_R}
             fill="none"
             strokeWidth="6"
@@ -258,8 +261,8 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
           />
           {/* Progress */}
           <motion.circle
-            cx="160"
-            cy="160"
+            cx="150"
+            cy="150"
             r={CIRCLE_R}
             fill="none"
             strokeWidth="6"
@@ -303,7 +306,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Control buttons */}
-      <div className="flex items-center gap-4 no-drag">
+      <div className="flex items-center gap-4 no-drag shrink-0 mt-2">
         {state.status === 'idle' ? (
           <motion.button
             whileHover={{ scale: 1.04 }}
@@ -345,7 +348,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Sessions count */}
-      <div className={`text-xs tracking-wide ${subColor} no-drag`}>
+      <div className={`text-xs tracking-wide ${subColor} no-drag shrink-0 mt-2`}>
         已完成 {state.sessionsCompleted} 个番茄
       </div>
 
