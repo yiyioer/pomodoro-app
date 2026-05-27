@@ -213,11 +213,11 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       <AnimatePresence>
         {showSettings && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 12, marginBottom: 12 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
+            initial={{ opacity: 0, scale: 0.95, y: -8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={spring}
-            className="no-drag overflow-hidden"
+            className="no-drag mb-3 mt-3"
           >
             <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
               {([

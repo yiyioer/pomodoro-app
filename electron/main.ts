@@ -32,10 +32,12 @@ function updateTrayTitle(text: string) {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 420,
-    height: 560,
+    height: 600,
+    minWidth: 380,
+    minHeight: 500,
     frame: false,
     transparent: true,
-    resizable: false,
+    resizable: true,
     alwaysOnTop: false,
     skipTaskbar: false,
     title: '番茄钟',
