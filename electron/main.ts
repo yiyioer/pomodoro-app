@@ -10,7 +10,7 @@ let tray: Tray | null = null
 let isAlwaysOnTop = false
 let isQuitting = false
 
-function createTrayIcon(text: string): nativeImage {
+function createTrayIcon(): nativeImage {
   const size = 16
   const canvas = Buffer.alloc(size * size * 4)
   for (let i = 0; i < size * size; i++) {
@@ -19,8 +19,7 @@ function createTrayIcon(text: string): nativeImage {
     canvas[i * 4 + 2] = 60
     canvas[i * 4 + 3] = 255
   }
-  const img = nativeImage.createFromBuffer(canvas, { width: size, height: size })
-  return img.resize({ width: 16, height: 16 })
+  return nativeImage.createFromBuffer(canvas, { width: size, height: size })
 }
 
 function updateTrayTitle(text: string) {
@@ -31,14 +30,13 @@ function updateTrayTitle(text: string) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 420,
-    height: 520,
+    width: 400,
+    height: 500,
     minWidth: 400,
     minHeight: 500,
     frame: false,
     transparent: true,
     resizable: true,
-    alwaysOnTop: false,
     skipTaskbar: false,
     title: '番茄钟',
     backgroundColor: '#00000000',
@@ -62,7 +60,7 @@ function createWindow() {
 }
 
 function createTray() {
-  const icon = createTrayIcon('')
+  const icon = createTrayIcon()
   tray = new Tray(icon)
   tray.setToolTip('番茄钟')
 
@@ -148,38 +146,17 @@ ipcMain.handle('set-min-size', (_event, width: number, height: number) => {
   }
 })
 
-function animateResize(targetW: number, targetH: number) {
-  if (!mainWindow) return
-  const [startW, startH] = mainWindow.getSize()
-  if (startW === targetW && startH === targetH) return
-  const duration = 280
-  const startTime = Date.now()
-
-  const step = () => {
-    const elapsed = Date.now() - startTime
-    const t = Math.min(elapsed / duration, 1)
-    const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-    const w = Math.round(startW + (targetW - startW) * eased)
-    const h = Math.round(startH + (targetH - startH) * eased)
-    mainWindow?.setSize(w, h)
-    if (t < 1) setTimeout(step, 16)
-  }
-  step()
-}
-
 ipcMain.handle('shrink-window', () => {
   if (mainWindow) {
     const [w] = mainWindow.getSize()
-    animateResize(w, 520)
+    mainWindow.setSize(w, 500)
   }
 })
 
 ipcMain.handle('expand-window', () => {
   if (mainWindow) {
-    const [w, h] = mainWindow.getSize()
-    if (h < 590) {
-      animateResize(w, 590)
-    }
+    const [w] = mainWindow.getSize()
+    mainWindow.setSize(w, 610)
   }
 })
 

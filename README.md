@@ -1,38 +1,103 @@
 # 番茄钟 (Pomodoro Timer)
 
-Apple-style Pomodoro timer desktop app built with Electron + React + TypeScript + Tailwind CSS.
+苹果风格的桌面番茄钟，基于 Electron + React + TypeScript + Tailwind CSS 构建。
 
-苹果风格的桌面番茄钟，使用 Electron + React + TypeScript + Tailwind CSS 构建。
+---
 
-## Features / 功能
+## 功能特性
 
-- 25 min focus / 5 min short break / 15 min long break (customizable)
-- 25 分钟专注 / 5 分钟短休 / 15 分钟长休（可自定义）
-- Frosted glass UI with dark/light mode
-- 毛玻璃界面，支持深色/浅色模式
-- Circular progress ring with spring animations
-- 环形进度条 + 弹性动画
-- Frameless window with system tray support
-- 无边框窗口，系统托盘常驻
-- Always-on-top mode
-- 窗口置顶
+- **番茄工作法**：25分钟专注 / 5分钟短休 / 15分钟长休，完成4个专注后自动进入长休
+- **自定义时长**：支持 1-120 分钟自由设置专注和休息时长，自动持久化到本地存储
+- **环形进度条**：SVG 环形倒计时 + Framer Motion 弹性动画
+- **毛玻璃界面**：透明无边框窗口，深色/浅色模式一键切换
+- **系统托盘常驻**：关闭窗口后隐藏到托盘，双击托盘图标恢复显示
+- **窗口置顶**：支持将窗口固定在最前，方便边工作边查看
+- **托盘倒计时**：托盘图标实时显示剩余时间，完成后显示提示
+- **流畅交互**：会话切换动画、数字跳动效果、完成弹窗提示
 
-## Setup / 安装
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 框架 | Electron 34 |
+| 前端 | React 19 + TypeScript 5 |
+| 样式 | Tailwind CSS 3 |
+| 动画 | Framer Motion 12 |
+| 构建 | Vite 6 + electron-builder |
+
+## 快速开始
 
 ```bash
+# 安装依赖
 npm install
-```
 
-## Development / 开发
-
-```bash
+# 开发模式（热更新）
 npm run dev
-```
 
-## Build / 打包
-
-```bash
+# 生产构建
 npm run build
 ```
 
-Output will be in the `release/` directory. / 打包输出在 `release/` 目录。
+构建产物在 `release/` 目录：
+- `番茄钟-1.0.0-win.zip` — 便携版，解压后运行 `番茄钟.exe` 即可
+
+## 使用说明
+
+### 基本操作
+
+| 按钮 | 功能 |
+|------|------|
+| 红色 (×) | 隐藏窗口到系统托盘 |
+| 黄色 (—) | 最小化窗口 |
+| 📌 | 切换窗口置顶 |
+| ☀ / ☾ | 切换深色/浅色模式 |
+| ⚙ | 展开/收起时长设置面板 |
+| ✕ | 退出程序 |
+
+### 计时操作
+
+- 点击 **开始** 按钮启动倒计时
+- 运行中可 **暂停** 或 **重置**
+- 在专注/短休/长休之间切换，计时自动重置
+- 计时结束弹出完成提示，自动进入下一阶段
+
+### 托盘菜单
+
+右键系统托盘图标可：
+- 显示/隐藏窗口
+- 切换窗口置顶
+- 切换深色模式
+- 退出程序
+
+## 自定义时长
+
+点击 ⚙ 按钮展开设置面板，可分别设置：
+
+- **专注**：默认 25 分钟
+- **短休**：默认 5 分钟
+- **长休**：默认 15 分钟
+
+有效范围 1-120 分钟，设置自动保存，下次启动无需重新设置。
+
+## 项目结构
+
+```
+├── electron/              # Electron 主进程
+│   ├── main.ts            # 窗口管理、托盘、IPC
+│   └── preload.ts         # 预加载脚本（contextBridge）
+├── src/                   # 渲染进程
+│   ├── components/
+│   │   └── PomodoroTimer.tsx  # 主计时器组件
+│   ├── hooks/
+│   │   └── useTimer.ts    # 计时器状态机
+│   ├── App.tsx            # 根组件
+│   ├── main.tsx           # 入口
+│   └── index.css          # 全局样式（Tailwind + drag region）
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
+```
+
+## License
+
+MIT
