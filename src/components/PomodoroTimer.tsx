@@ -247,8 +247,10 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
         )}
       </AnimatePresence>
 
+      <motion.div layout transition={panelTransition} className="flex flex-col items-center shrink-0">
+
       {/* Ring progress + timer */}
-      <div className="relative flex items-center justify-center no-drag shrink-0 mt-2">
+      <div className="relative flex items-center justify-center no-drag mt-2">
         <svg width="300" height="300" viewBox="0 0 300 300">
           {/* Track */}
           <circle
@@ -306,7 +308,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Control buttons */}
-      <div className="flex items-center gap-4 no-drag shrink-0 mt-2">
+      <div className="flex items-center gap-4 no-drag mt-2">
         {state.status === 'idle' ? (
           <motion.button
             whileHover={{ scale: 1.04 }}
@@ -348,9 +350,11 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Sessions count */}
-      <div className={`text-xs tracking-wide ${subColor} no-drag shrink-0 mt-3`}>
+      <div className={`text-xs tracking-wide ${subColor} no-drag mt-3`}>
         已完成 {state.sessionsCompleted} 个番茄
       </div>
+
+      </motion.div>
 
       {/* Completion toast */}
       <AnimatePresence>
