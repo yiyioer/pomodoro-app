@@ -138,6 +138,16 @@ ipcMain.handle('close-window', () => {
   if (mainWindow) mainWindow.hide()
 })
 
+ipcMain.handle('set-min-size', (_event, width: number, height: number) => {
+  if (mainWindow) {
+    mainWindow.setMinimumSize(width, height)
+    const [w, h] = mainWindow.getSize()
+    if (w < width || h < height) {
+      mainWindow.setSize(Math.max(w, width), Math.max(h, height))
+    }
+  }
+})
+
 ipcMain.handle('quit-app', () => {
   isQuitting = true
   app.quit()

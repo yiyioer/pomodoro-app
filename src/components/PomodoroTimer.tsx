@@ -81,6 +81,13 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(durations))
   }, [durations])
 
+  // Adjust min window size when settings toggles
+  useEffect(() => {
+    if (window.electronAPI) {
+      window.electronAPI.setMinSize(400, showSettings ? 610 : 500)
+    }
+  }, [showSettings])
+
   const handleToggleAlwaysOnTop = useCallback(async () => {
     if (window.electronAPI) {
       const newVal = await window.electronAPI.toggleAlwaysOnTop(!alwaysOnTop)

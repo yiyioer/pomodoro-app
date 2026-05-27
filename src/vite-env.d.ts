@@ -6,6 +6,7 @@ interface ElectronAPI {
   updateTrayTimer: (text: string) => Promise<void>
   minimizeWindow: () => Promise<void>
   closeWindow: () => Promise<void>
+  setMinSize: (width: number, height: number) => Promise<void>
   quitApp: () => Promise<void>
 }
 
