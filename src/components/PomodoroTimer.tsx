@@ -18,7 +18,7 @@ const CIRCLE_C = 2 * Math.PI * CIRCLE_R
 
 const spring = { type: 'spring' as const, stiffness: 400, damping: 30 }
 const gentle = { type: 'spring' as const, stiffness: 200, damping: 25 }
-const fade = { duration: 0.2, ease: 'easeOut' as const }
+const panelTransition = { type: 'spring' as const, stiffness: 170, damping: 20, mass: 0.8 }
 const STORAGE_KEY = 'pomodoro-durations'
 
 function loadDurations(): Record<SessionType, number> {
@@ -217,7 +217,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
             initial={{ opacity: 0, scale: 0.95, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -6 }}
-            transition={fade}
+            transition={panelTransition}
             className="no-drag shrink-0"
           >
             <div className={`mt-3 mb-1 pt-3 border-t ${darkMode ? 'border-white/10' : 'border-gray-300/60'}`}>
