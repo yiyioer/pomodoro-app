@@ -19,6 +19,7 @@ const CIRCLE_C = 2 * Math.PI * CIRCLE_R
 const spring = { type: 'spring' as const, stiffness: 250, damping: 25 }
 const gentle = { type: 'spring' as const, stiffness: 100, damping: 18 }
 const panelTransition = { type: 'spring' as const, stiffness: 170, damping: 20, mass: 0.8 }
+const quickFade = { duration: 0.15 }
 const STORAGE_KEY = 'pomodoro-durations'
 
 function loadDurations(): Record<SessionType, number> {
@@ -85,7 +86,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
   useEffect(() => {
     if (window.electronAPI) {
       if (showSettings) {
-        window.electronAPI.setMinSize(400, 610)
+        window.electronAPI.setMinSize(400, 590)
         window.electronAPI.expandWindow()
       } else {
         window.electronAPI.setMinSize(400, 500)
@@ -224,31 +225,39 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       </div>
 
       {/* Settings panel */}
-      {showSettings && (
-        <div className={`no-drag shrink-0 mt-3 mb-1 pt-3 border-t ${darkMode ? 'border-white/10' : 'border-gray-300/60'}`}>
-          <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
-            {([
-              { key: 'focus' as SessionType, label: '专注' },
-              { key: 'shortBreak' as SessionType, label: '短休' },
-              { key: 'longBreak' as SessionType, label: '长休' },
-            ]).map(({ key, label }) => (
-              <label key={key} className={`flex flex-col items-center gap-1 ${subColor}`}>
-                <span className="text-[10px] tracking-wide">{label}</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={120}
-                  value={durations[key]}
-                  onChange={(e) => handleDurationChange(key, parseInt(e.target.value) || 1)}
-                  className={`w-12 text-center text-xs font-medium py-1 rounded-lg border-0 outline-none ${btnBg} ${textColor}`}
-                  style={{ MozAppearance: 'textfield' }}
-                />
-                <span className="text-[9px] opacity-50">分钟</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={quickFade}
+            className={`no-drag shrink-0 mt-3 mb-1 pt-3 border-t ${darkMode ? 'border-white/10' : 'border-gray-300/60'}`}
+          >
+            <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
+              {([
+                { key: 'focus' as SessionType, label: '专注' },
+                { key: 'shortBreak' as SessionType, label: '短休' },
+                { key: 'longBreak' as SessionType, label: '长休' },
+              ]).map(({ key, label }) => (
+                <label key={key} className={`flex flex-col items-center gap-1 ${subColor}`}>
+                  <span className="text-[10px] tracking-wide">{label}</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={durations[key]}
+                    onChange={(e) => handleDurationChange(key, parseInt(e.target.value) || 1)}
+                    className={`w-12 text-center text-xs font-medium py-1 rounded-lg border-0 outline-none ${btnBg} ${textColor}`}
+                    style={{ MozAppearance: 'textfield' }}
+                  />
+                  <span className="text-[9px] opacity-50">分钟</span>
+                </label>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div layout transition={panelTransition} className="flex flex-col items-center shrink-0">
 
