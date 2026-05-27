@@ -138,13 +138,7 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
             onClick={handleMinimize}
             className="w-3.5 h-3.5 rounded-full bg-[#febc2e] hover:bg-[#f5a623] transition-colors duration-200 active:scale-90"
           />
-          <button
-            onClick={handleQuit}
-            className="w-3.5 h-3.5 rounded-full bg-[#28c840] hover:bg-[#34d94b] transition-colors duration-200 active:scale-90 flex items-center justify-center text-[9px] font-bold text-black/60 hover:text-black/80"
-            title="退出程序"
-          >
-            ×
-          </button>
+          <div className="w-3.5 h-3.5 rounded-full bg-[#28c840]/40" />
         </div>
 
         {/* Right toggles */}
@@ -173,6 +167,14 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
             }`}
           >
             ⚙
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={handleQuit}
+            className={`text-xs px-3 py-1.5 rounded-full transition-all duration-300 ${btnBg} hover:bg-red-500/30 ${textColor}`}
+            title="退出程序"
+          >
+            ✕
           </motion.button>
         </div>
       </div>
@@ -211,9 +213,9 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
       <AnimatePresence>
         {showSettings && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginBottom: 8 }}
-            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            initial={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 12, marginBottom: 12 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
             transition={spring}
             className="no-drag overflow-hidden"
           >
