@@ -32,9 +32,9 @@ function updateTrayTitle(text: string) {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 420,
-    height: 520,
+    height: 600,
     minWidth: 400,
-    minHeight: 500,
+    minHeight: 610,
     frame: false,
     transparent: true,
     resizable: true,
@@ -169,17 +169,14 @@ function animateResize(targetW: number, targetH: number) {
 
 ipcMain.handle('shrink-window', () => {
   if (mainWindow) {
-    const [w] = mainWindow.getSize()
-    animateResize(w, 520)
+    animateResize(420, 520)
   }
 })
 
 ipcMain.handle('expand-window', () => {
   if (mainWindow) {
     const [w, h] = mainWindow.getSize()
-    if (h < 590) {
-      animateResize(w, 590)
-    }
+    animateResize(Math.max(w, 420), Math.max(h, 620))
   }
 })
 
