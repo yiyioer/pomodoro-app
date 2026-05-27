@@ -81,10 +81,16 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(durations))
   }, [durations])
 
-  // Adjust min window size when settings toggles
+  // Adjust window size when settings toggles
   useEffect(() => {
     if (window.electronAPI) {
-      window.electronAPI.setMinSize(400, showSettings ? 610 : 500)
+      if (showSettings) {
+        window.electronAPI.setMinSize(400, 610)
+        window.electronAPI.expandWindow()
+      } else {
+        window.electronAPI.setMinSize(400, 500)
+        window.electronAPI.shrinkWindow()
+      }
     }
   }, [showSettings])
 

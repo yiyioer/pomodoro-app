@@ -148,6 +148,38 @@ ipcMain.handle('set-min-size', (_event, width: number, height: number) => {
   }
 })
 
+function animateResize(targetW: number, targetH: number) {
+  if (!mainWindow) return
+  const [startW, startH] = mainWindow.getSize()
+  if (startW === targetW && startH === targetH) return
+  const duration = 280
+  const startTime = Date.now()
+
+  const step = () => {
+    const elapsed = Date.now() - startTime
+    const t = Math.min(elapsed / duration, 1)
+    const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+    const w = Math.round(startW + (targetW - startW) * eased)
+    const h = Math.round(startH + (targetH - startH) * eased)
+    mainWindow?.setSize(w, h)
+    if (t < 1) setTimeout(step, 16)
+  }
+  step()
+}
+
+ipcMain.handle('shrink-window', () => {
+  if (mainWindow) {
+    animateResize(420, 520)
+  }
+})
+
+ipcMain.handle('expand-window', () => {
+  if (mainWindow) {
+    const [w, h] = mainWindow.getSize()
+    animateResize(Math.max(w, 420), Math.max(h, 620))
+  }
+})
+
 ipcMain.handle('quit-app', () => {
   isQuitting = true
   app.quit()

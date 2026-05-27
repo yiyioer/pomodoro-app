@@ -7,6 +7,8 @@ interface ElectronAPI {
   minimizeWindow: () => Promise<void>
   closeWindow: () => Promise<void>
   setMinSize: (width: number, height: number) => Promise<void>
+  shrinkWindow: () => Promise<void>
+  expandWindow: () => Promise<void>
   quitApp: () => Promise<void>
 }
 

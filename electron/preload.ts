@@ -7,5 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
   closeWindow: () => ipcRenderer.invoke('close-window'),
   setMinSize: (width: number, height: number) => ipcRenderer.invoke('set-min-size', width, height),
+  shrinkWindow: () => ipcRenderer.invoke('shrink-window'),
+  expandWindow: () => ipcRenderer.invoke('expand-window'),
   quitApp: () => ipcRenderer.invoke('quit-app'),
 })
