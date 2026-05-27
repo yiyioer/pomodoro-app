@@ -18,12 +18,38 @@ const CIRCLE_C = 2 * Math.PI * CIRCLE_R
 
 const spring = { type: 'spring' as const, stiffness: 400, damping: 30 }
 const gentle = { type: 'spring' as const, stiffness: 200, damping: 25 }
+const STORAGE_KEY = 'pomodoro-durations'
+
+function loadDurations(): Record<SessionType, number> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (
+        typeof parsed.focus === 'number' && parsed.focus > 0 &&
+        typeof parsed.shortBreak === 'number' && parsed.shortBreak > 0 &&
+        typeof parsed.longBreak === 'number' && parsed.longBreak > 0
+      ) {
+        return parsed
+      }
+    }
+  } catch { /* fall through to defaults */ }
+  return { focus: 25, shortBreak: 5, longBreak: 15 }
+}
 
 export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
-  const { state, progress, timeString, minutes, seconds, start, pause, reset, changeSession } =
-    useTimer('focus')
+  const [durations, setDurationsState] = useState<Record<SessionType, number>>(loadDurations)
+  const durationsInSeconds: Record<SessionType, number> = {
+    focus: durations.focus * 60,
+    shortBreak: durations.shortBreak * 60,
+    longBreak: durations.longBreak * 60,
+  }
+
+  const { state, progress, timeString, minutes, seconds, start, pause, reset, changeSession, setDurations } =
+    useTimer('focus', durationsInSeconds)
   const [alwaysOnTop, setAlwaysOnTop] = useState(false)
   const [showComplete, setShowComplete] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   const isRunning = state.status === 'running'
   const isPaused = state.status === 'paused'
@@ -49,6 +75,11 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
     }
   }, [progress, state.status])
 
+  // Persist durations to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(durations))
+  }, [durations])
+
   const handleToggleAlwaysOnTop = useCallback(async () => {
     if (window.electronAPI) {
       const newVal = await window.electronAPI.toggleAlwaysOnTop(!alwaysOnTop)
@@ -58,12 +89,30 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
     }
   }, [alwaysOnTop])
 
+  const handleDurationChange = useCallback(
+    (session: SessionType, value: number) => {
+      const clamped = Math.max(1, Math.min(120, value))
+      const newDurations = { ...durations, [session]: clamped }
+      setDurationsState(newDurations)
+      setDurations({
+        focus: newDurations.focus * 60,
+        shortBreak: newDurations.shortBreak * 60,
+        longBreak: newDurations.longBreak * 60,
+      })
+    },
+    [durations, setDurations]
+  )
+
   const handleMinimize = () => {
     if (window.electronAPI) window.electronAPI.minimizeWindow()
   }
 
   const handleClose = () => {
     if (window.electronAPI) window.electronAPI.closeWindow()
+  }
+
+  const handleQuit = () => {
+    if (window.electronAPI) window.electronAPI.quitApp()
   }
 
   const isGlass = true
@@ -89,7 +138,13 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
             onClick={handleMinimize}
             className="w-3.5 h-3.5 rounded-full bg-[#febc2e] hover:bg-[#f5a623] transition-colors duration-200 active:scale-90"
           />
-          <div className="w-3.5 h-3.5 rounded-full bg-[#28c840]/40" />
+          <button
+            onClick={handleQuit}
+            className="w-3.5 h-3.5 rounded-full bg-[#28c840] hover:bg-[#34d94b] transition-colors duration-200 active:scale-90 flex items-center justify-center text-[9px] font-bold text-black/60 hover:text-black/80"
+            title="退出程序"
+          >
+            ×
+          </button>
         </div>
 
         {/* Right toggles */}
@@ -109,6 +164,15 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
             className={`text-xs px-3 py-1.5 rounded-full transition-all duration-300 ${btnBg} ${btnHover} ${textColor}`}
           >
             {darkMode ? '☀' : '☾'}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setShowSettings((v) => !v)}
+            className={`text-xs px-3 py-1.5 rounded-full transition-all duration-300 ${btnBg} ${btnHover} ${textColor} ${
+              showSettings ? (darkMode ? 'bg-white/[0.16]' : 'bg-black/[0.1]') : ''
+            }`}
+          >
+            ⚙
           </motion.button>
         </div>
       </div>
@@ -142,6 +206,41 @@ export default function PomodoroTimer({ darkMode, onToggleDark }: Props) {
           ))}
         </motion.div>
       </div>
+
+      {/* Settings panel */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 8 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            transition={spring}
+            className="no-drag overflow-hidden"
+          >
+            <div className={`flex gap-3 p-3 rounded-xl ${btnBg}`}>
+              {([
+                { key: 'focus' as SessionType, label: '专注' },
+                { key: 'shortBreak' as SessionType, label: '短休' },
+                { key: 'longBreak' as SessionType, label: '长休' },
+              ]).map(({ key, label }) => (
+                <label key={key} className={`flex flex-col items-center gap-1 ${subColor}`}>
+                  <span className="text-[10px] tracking-wide">{label}</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={durations[key]}
+                    onChange={(e) => handleDurationChange(key, parseInt(e.target.value) || 1)}
+                    className={`w-12 text-center text-xs font-medium py-1 rounded-lg border-0 outline-none ${btnBg} ${textColor}`}
+                    style={{ MozAppearance: 'textfield' }}
+                  />
+                  <span className="text-[9px] opacity-50">分钟</span>
+                </label>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Ring progress + timer */}
       <div className="relative flex items-center justify-center no-drag">

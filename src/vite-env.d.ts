@@ -6,6 +6,7 @@ interface ElectronAPI {
   updateTrayTimer: (text: string) => Promise<void>
   minimizeWindow: () => Promise<void>
   closeWindow: () => Promise<void>
+  quitApp: () => Promise<void>
 }
 
 declare global {

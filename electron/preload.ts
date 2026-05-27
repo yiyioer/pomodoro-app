@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateTrayTimer: (text: string) => ipcRenderer.invoke('update-tray-timer', text),
   minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
   closeWindow: () => ipcRenderer.invoke('close-window'),
+  quitApp: () => ipcRenderer.invoke('quit-app'),
 })

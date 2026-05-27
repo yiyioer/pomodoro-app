@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename)
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let isAlwaysOnTop = false
+let isQuitting = false
 
 function createTrayIcon(text: string): nativeImage {
   const size = 16
@@ -135,11 +136,17 @@ ipcMain.handle('close-window', () => {
   if (mainWindow) mainWindow.hide()
 })
 
+ipcMain.handle('quit-app', () => {
+  isQuitting = true
+  app.quit()
+})
+
 app.whenReady().then(() => {
   createWindow()
   createTray()
 
   mainWindow?.on('close', (e) => {
+    if (isQuitting) return
     e.preventDefault()
     mainWindow?.hide()
   })
